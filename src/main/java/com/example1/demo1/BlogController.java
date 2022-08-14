@@ -1,6 +1,8 @@
 package com.example1.demo1;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +24,13 @@ public class BlogController {
         return blogRepository.findAll();
     }
 
+
+    @GetMapping("/index")
+    public String showBlogList(Model model) {
+        model.addAttribute("blogs", blogRepository.findAll());
+        return "index";
+    }
+
     @GetMapping("/blog/{id}")
     public Blog show(@PathVariable String id){
         int blogId = Integer.parseInt(id);
@@ -34,28 +43,58 @@ public class BlogController {
         return blogRepository.findByTitleContainingOrContentContaining(searchTerm, searchTerm);
     }
 
-    @PostMapping("/blog")
-    public Blog create(@RequestBody Map<String, String> body){
-        String title = body.get("title");
-        String content = body.get("content");
-        return blogRepository.save(new Blog(title, content));
+    @GetMapping("/addblog")
+    public String showSignUpForm(Blog blog) {
+        return "add-blog";
     }
 
-    @PutMapping("/blog/{id}")
-    public Blog update(@PathVariable String id, @RequestBody Map<String, String> body){
-        int blogId = Integer.parseInt(id);
+    @PostMapping("/add")
+    public String create(Blog blog, BindingResult result, Model model){
+        if (result.hasErrors()) {
+            return "add-blog";
+        }
+
+        blogRepository.save(blog);
+        return "redirect:/index";
+    }
+
+
+    @GetMapping("/edit/{id}")
+    public String showUpdateForm(@PathVariable("id") String id, Model model) {
+        Blog blog = blogRepository.findById(Integer.valueOf(id))
+                .orElseThrow(() -> new IllegalArgumentException("Invalid blog Id:" + id));
+
+        model.addAttribute("blog", blog);
+        return "update-blog";
+    }
+
+    @PutMapping("/update/{id}")
+    public String update(@PathVariable("id") String id, Blog blog,
+                       BindingResult result, Model model){
+
+        if (result.hasErrors()) {
+            blog.setId(Integer.parseInt(id));
+            return "update-blog";
+        }
+
+        blogRepository.save(blog);
+        return "redirect:/index";
+
+        /*int blogId = Integer.parseInt(id);
         // getting blog
         Blog blog = blogRepository.findById(blogId).get();
         blog.setTitle(body.get("title"));
         blog.setContent(body.get("content"));
-        return blogRepository.save(blog);
+        return blogRepository.save(blog);*/
     }
 
-    @DeleteMapping("blog/{id}")
-    public boolean delete(@PathVariable String id){
-        int blogId = Integer.parseInt(id);
-        blogRepository.deleteById(blogId);
-        return true;
+
+    @GetMapping("/delete/{id}")
+    public String deleteUser(@PathVariable("id") String id, Model model) {
+        Blog blog = blogRepository.findById(Integer.valueOf(id))
+                .orElseThrow(() -> new IllegalArgumentException("Invalid blog Id:" + id));
+        blogRepository.delete(blog);
+        return "redirect:/index";
     }
 
 }
