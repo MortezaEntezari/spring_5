@@ -14,29 +14,4 @@ public class Demo1Application {
         SpringApplication.run(Demo1Application.class, args);
     }
 
-
-    @GetMapping("/isPrime")
-    public String isPrime(@RequestParam(value = "number") int number) {
-
-        if (number==0 || number==1){
-
-            return number+" is not prime";
-
-        }
-
-        for (int i = 2; i < Math.floor(Math.sqrt(number)); i++) {
-
-            if (number%i==0){
-
-                return number+" is not prime";
-
-            }
-
-        }
-
-        return number+" is prime";
-
-
-    }
-
 }
