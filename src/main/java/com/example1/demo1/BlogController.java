@@ -26,8 +26,9 @@ public class BlogController {
 
 
     @GetMapping("/index")
-    public String showBlogList(Model model) {
-        model.addAttribute("blogs", blogRepository.findAll());
+    public String index(Model model) {
+        List<Blog> blogs = blogRepository.findAll();
+        model.addAttribute("blogs", blogs);
         return "index";
     }
 
