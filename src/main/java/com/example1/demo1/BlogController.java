@@ -1,6 +1,7 @@
 package com.example1.demo1;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@RestController
+@Controller
 public class BlogController {
 
     private final
@@ -19,48 +20,36 @@ public class BlogController {
         this.blogRepository = blogRepository;
     }
 
-    @GetMapping("/blog")
-    public List<Blog> index(){
-        return blogRepository.findAll();
-    }
-
-
-    @GetMapping("/index")
+    @RequestMapping(path = "/",method = RequestMethod.GET)
     public String index(Model model) {
         List<Blog> blogs = blogRepository.findAll();
         model.addAttribute("blogs", blogs);
         return "index";
     }
 
-    @GetMapping("/blog/{id}")
-    public Blog show(@PathVariable String id){
+    @RequestMapping(path = "/{id}",method = RequestMethod.GET)
+    public Blog show(@PathVariable String id) {
         int blogId = Integer.parseInt(id);
         return blogRepository.findById(blogId).get();
     }
 
-    @PostMapping("/blog/search")
-    public List<Blog> search(@RequestBody Map<String, String> body){
-        String searchTerm = body.get("text");
-        return blogRepository.findByTitleContainingOrContentContaining(searchTerm, searchTerm);
-    }
-
-    @GetMapping("/addblog")
+    @RequestMapping(path = "/addblog",method = RequestMethod.GET)
     public String showSignUpForm(Blog blog) {
         return "add-blog";
     }
 
-    @PostMapping("/add")
-    public String create(Blog blog, BindingResult result, Model model){
+    @RequestMapping(path = "/add",method = RequestMethod.POST)
+    public String create(Blog blog, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "add-blog";
         }
 
         blogRepository.save(blog);
-        return "redirect:/index";
+        return "redirect:/";
     }
 
 
-    @GetMapping("/edit/{id}")
+    @RequestMapping(path = "/edit/{id}",method = RequestMethod.GET)
     public String showUpdateForm(@PathVariable("id") String id, Model model) {
         Blog blog = blogRepository.findById(Integer.valueOf(id))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid blog Id:" + id));
@@ -69,9 +58,9 @@ public class BlogController {
         return "update-blog";
     }
 
-    @PutMapping("/update/{id}")
+    @RequestMapping(path = "/update/{id}",method = RequestMethod.POST)
     public String update(@PathVariable("id") String id, Blog blog,
-                       BindingResult result, Model model){
+                         BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             blog.setId(Integer.parseInt(id));
@@ -79,7 +68,7 @@ public class BlogController {
         }
 
         blogRepository.save(blog);
-        return "redirect:/index";
+        return "redirect:/";
 
         /*int blogId = Integer.parseInt(id);
         // getting blog
@@ -90,12 +79,12 @@ public class BlogController {
     }
 
 
-    @GetMapping("/delete/{id}")
+    @RequestMapping(path = "/delete/{id}",method = RequestMethod.GET)
     public String deleteUser(@PathVariable("id") String id, Model model) {
         Blog blog = blogRepository.findById(Integer.valueOf(id))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid blog Id:" + id));
         blogRepository.delete(blog);
-        return "redirect:/index";
+        return "redirect:/";
     }
 
 }

@@ -6,7 +6,6 @@
 </head>
 <body>
 
-<!--/*@thymesVar id="blogs" type="List<Blog>"*/-->
 <div th:switch="${blogs}">
     <h2 th:case="null">No blogs yet!</h2>
     <div th:case="*">
