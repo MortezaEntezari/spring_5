@@ -1,5 +1,7 @@
-package com.example1.demo1;
+package com.example1.demo1.Controller;
 
+import com.example1.demo1.Repository.BlogRepository;
+import com.example1.demo1.Domain.Blog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,7 +9,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class BlogController {
@@ -20,12 +21,12 @@ public class BlogController {
         this.blogRepository = blogRepository;
     }
 
-    @RequestMapping(path = "/",method = RequestMethod.GET)
+    /*@RequestMapping(path = "/",method = RequestMethod.GET)
     public String index(Model model) {
         List<Blog> blogs = blogRepository.findAll();
         model.addAttribute("blogs", blogs);
         return "index";
-    }
+    }*/
 
     @RequestMapping(path = "/{id}",method = RequestMethod.GET)
     public Blog show(@PathVariable String id) {
